@@ -1,0 +1,2 @@
+rootProject.name = "Mob Dev Code Challenge"
+include ':app'

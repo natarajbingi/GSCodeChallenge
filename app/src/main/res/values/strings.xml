@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Code Challenge</string>
+
+    <string-array name="typeArray">
+        <item>Day</item>
+        <item>From Day</item>
+    </string-array>
+</resources>
