@@ -9,8 +9,8 @@ Code Challenge
 
 Compatibility
 -------------
- * **Minimum Android SDK**: GSCodeChallenge v4 requires a minimum API level of 21.
- * **Compile Android SDK**: GSCodeChallenge v4 requires you to compile against API 30 or later.
+ * **Minimum Android SDK**: GSCodeChallenge requires a minimum API level of 21.
+ * **Compile Android SDK**: GSCodeChallenge requires you to compile against API 30 or later.
 
 Development
 -----------
