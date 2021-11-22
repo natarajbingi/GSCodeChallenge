@@ -60,7 +60,7 @@ class GmsAPODAdapter(private val mListener: OnItemClickListener) :
                 setFavText(arrDate.contains(item.date))
             }
 
-            itemBinding.addToFavorite.setOnClickListener {
+            itemBinding.startFavo.setOnClickListener {
                 listener.onItemClick(item, adapterPosition)
             }
             itemView.setOnLongClickListener {

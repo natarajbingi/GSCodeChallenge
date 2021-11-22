@@ -56,6 +56,7 @@ class APODActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener, Ap
         binding.gmsRecycleView.adapter = adapter
         viewModel.getLiveData().observe(this, {
             isFavList = false
+            binding.favListIt.setImageDrawable(getDrawable(R.drawable.ic_star))
             adapter.submitList(it)
             adapter.notifyDataSetChanged()
         })
@@ -181,6 +182,9 @@ class APODActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener, Ap
                     isFavList = true
                     adapter.submitList(viewModel.mFavLiveData)
                     binding.favListIt.setImageDrawable(getDrawable(R.drawable.ic_star_favo))
+                    if (viewModel.mFavLiveData.isEmpty()){
+                        Constants.toastAction(this, "No Items available in favorites.")
+                    }
                 } else {
                     isFavList = false
                     adapter.submitList(viewModel.getLiveData().value)
@@ -189,7 +193,6 @@ class APODActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener, Ap
                 adapter.notifyDataSetChanged()
                 viewModel.isFavList.value = !viewModel.isFavList.value!!
 
-                Constants.toastAction(this, "Favorite is in progress")
             }
         }
     }
