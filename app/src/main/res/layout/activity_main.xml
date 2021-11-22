@@ -22,21 +22,41 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:background="@color/backgroundColorLight"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 style="@style/header_title_text"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:paddingTop="5dp"
+                android:layout_weight="0.75"
+                android:layout_gravity="center_vertical"
                 android:paddingBottom="5dp"
                 android:text="@string/app_name"
                 android:textSize="30sp" />
 
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_weight="0.25"
+                android:id="@+id/favListIt"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_star"
+                android:layout_height="35dp"/>
+
         </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:id="@+id/one_divider"
+            android:background="@color/divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/header_title" />
 
         <LinearLayout
             android:id="@+id/dateRangeSelect"
@@ -47,9 +67,9 @@
             android:background="@color/backgroundColorLight"
             android:orientation="horizontal"
             android:padding="10dp"
-            app:layout_constraintEnd_toEndOf="@+id/header_title"
-            app:layout_constraintStart_toStartOf="@+id/header_title"
-            app:layout_constraintTop_toBottomOf="@+id/header_title">
+            app:layout_constraintEnd_toEndOf="@+id/one_divider"
+            app:layout_constraintStart_toStartOf="@+id/one_divider"
+            app:layout_constraintTop_toBottomOf="@+id/one_divider">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -99,6 +119,16 @@
                 android:textSize="18sp" />
         </LinearLayout>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:id="@+id/two_divider"
+            android:background="@color/divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dateRangeSelect" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/gmsRecycleView"
             android:layout_width="0dp"
@@ -110,7 +140,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dateRangeSelect"
+            app:layout_constraintTop_toBottomOf="@+id/two_divider"
             tools:listitem="@layout/item_layout" />
 
         <LinearLayout

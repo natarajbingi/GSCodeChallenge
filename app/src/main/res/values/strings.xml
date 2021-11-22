@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Code Challenge</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <string-array name="typeArray">
         <item>Day</item>

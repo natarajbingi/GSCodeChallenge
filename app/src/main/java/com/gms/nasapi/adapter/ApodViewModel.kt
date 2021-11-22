@@ -1,10 +1,7 @@
 package com.gms.nasapi.adapter
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.gms.nasapi.network.ApodCallBacks
 import com.gms.nasapi.network.RestFullService
 import com.gms.nasapi.utils.Constants
@@ -17,21 +14,13 @@ class ApodViewModel(application: Application) : AndroidViewModel(application), A
     private lateinit var view: ApodCallBacks
     private var applica: Application = application
     private var mDataSetLiveData: MutableLiveData<List<NasaApiResponse>> = MutableLiveData()
+    var mFavLiveData: MutableList<NasaApiResponse> = mutableListOf()
     var mDataSet: MutableList<NasaApiResponse> = mutableListOf()
     var dateStrSelected: MutableLiveData<String> = MutableLiveData()
+    var isFavList: MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun onViewAvailable(view: ApodCallBacks) {
         this.view = view
-    }
-
-    fun onGetApodPictures(start_date: String, date: String) {
-        view.onPrShow()
-        viewModelScope.launch(Dispatchers.IO) {
-            if (start_date.isEmpty())
-                RestFullService.getNasaAPODdataDate(applica, date, this@ApodViewModel)
-            else
-                RestFullService.getNasaAPODdataList(applica, start_date, this@ApodViewModel)
-        }
     }
 
     fun getLiveData(): LiveData<List<NasaApiResponse>> {
@@ -80,5 +69,14 @@ class ApodViewModel(application: Application) : AndroidViewModel(application), A
         }
     }
 
+    private fun onGetApodPictures(start_date: String, date: String) {
+        view.onPrShow()
+        viewModelScope.launch(Dispatchers.IO) {
+            if (start_date.isEmpty())
+                RestFullService.getNasaAPODdataDate(applica, date, this@ApodViewModel)
+            else
+                RestFullService.getNasaAPODdataList(applica, start_date, this@ApodViewModel)
+        }
+    }
 
 }

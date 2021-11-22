@@ -10,13 +10,19 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.gms.nasapi.adapter.ApodViewModel
 import com.gms.nasapi.adapter.GmsAPODAdapter
+import com.gms.nasapi.adapter.GmsAPODAdapter.GmssViewHolder.Companion.arrDate
+import com.gms.nasapi.adapter.GmsAPODAdapter.GmssViewHolder.Companion.isFavList
 import com.gms.nasapi.adapter.OnItemClickListener
 import com.gms.nasapi.databinding.ActivityMainBinding
 import com.gms.nasapi.network.ApodCallBacks
 import com.gms.nasapi.utils.Constants
 import com.gms.nasapi.utils.DatePicker
 import com.gms.nasapi.utils.NasaApiResponse
+import com.google.gson.Gson
+import org.json.JSONArray
+import org.json.JSONObject
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class APODActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener, ApodCallBacks,
@@ -41,15 +47,47 @@ class APODActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener, Ap
         setProgressbar()
 
         binding.filterGet.setOnClickListener(this)
+        binding.favListIt.setOnClickListener(this)
         binding.imgDateClickTo.setOnClickListener(this)
         binding.SorryTryAgainBut.setOnClickListener(this)
 
+
+        adapter = GmsAPODAdapter(this)
+        binding.gmsRecycleView.adapter = adapter
         viewModel.getLiveData().observe(this, {
-            adapter = GmsAPODAdapter(this)
-            binding.gmsRecycleView.adapter = adapter
+            isFavList = false
             adapter.submitList(it)
+            adapter.notifyDataSetChanged()
         })
 
+        checkFavList()
+    }
+
+    private fun checkFavList() {
+
+        val item = Constants.getSessionData(Constants.FAV, this)
+        if (item != null && item.isNotEmpty()) {
+            arrDate.clear()
+            viewModel.mFavLiveData.clear()
+            val json = JSONArray(item)
+            for (i in 0 until (json.length())) {
+                val dataObj = json.getJSONObject(i)
+                arrDate.add(dataObj.optString("date"))
+                viewModel.mFavLiveData.add(
+                    NasaApiResponse(
+                        dataObj.optString("copyright"),
+                        dataObj.optString("date"),
+                        dataObj.optString("explanation"),
+                        dataObj.optString("hdurl"),
+                        dataObj.optString("media_type"),
+                        dataObj.optString("service_version"),
+                        dataObj.optString("title"),
+                        dataObj.optString("url"),
+                    )
+                )
+            }
+           // Log.d(TAG, "onCreate() items: ${viewModel.mFavLiveData}")
+        }
     }
 
     private fun setProgressbar() {
@@ -86,7 +124,7 @@ class APODActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener, Ap
         progressDialog.dismiss();
         binding.gmsRecycleView.visibility = View.VISIBLE
         binding.SorryTryAgainLayout.visibility = View.GONE
-       // Log.e(TAG, "onSuccessList: $list")
+        // Log.e(TAG, "onSuccessList: $list")
     }
 
     override fun onDateSet(
@@ -101,11 +139,32 @@ class APODActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener, Ap
     }
 
     override fun onItemClick(item: NasaApiResponse, position: Int) {
-        Constants.toastAction(this, item.title)
+        if (arrDate.contains(item.date)){
+             Constants.toastAction(this, "Item is already in favorite, long press to remove item")
+        } else {
+            viewModel.mFavLiveData.add(item)
+            Constants.setSessionData(Constants.FAV, viewModel.mFavLiveData, this)
+            checkFavList()
+            adapter.notifyDataSetChanged()
+            Constants.toastAction(this, "Item added to favorites")
+        }
     }
 
     override fun onItemLongClick(item: NasaApiResponse, position: Int) {
-        // Constants.toastAction(this, item.title)
+        Log.e(TAG, "onItemLongClick: ${item.date}")
+        if (arrDate.contains(item.date)){
+            Constants.alertDialogShowYesNo(this,
+                "Are you sure want to remove from Favorites.?",
+                { dialog, which ->
+                    viewModel.mFavLiveData.remove(item)
+                    Constants.setSessionData(Constants.FAV, viewModel.mFavLiveData, this)
+                    checkFavList()
+                    adapter.notifyDataSetChanged()
+                    Constants.toastAction(this, "Item remoed from favorites")
+                })
+        } else {
+            Constants.toastAction(this, "Item is not in favorites,")
+        }
     }
 
     override fun onClick(v: View?) {
@@ -116,6 +175,21 @@ class APODActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener, Ap
             }
             R.id.img_date_click_to -> {
                 DatePicker().show(supportFragmentManager, "DATE PICK")
+            }
+            R.id.favListIt -> {
+                if (viewModel.isFavList.value == false){
+                    isFavList = true
+                    adapter.submitList(viewModel.mFavLiveData)
+                    binding.favListIt.setImageDrawable(getDrawable(R.drawable.ic_star_favo))
+                } else {
+                    isFavList = false
+                    adapter.submitList(viewModel.getLiveData().value)
+                    binding.favListIt.setImageDrawable(getDrawable(R.drawable.ic_star))
+                }
+                adapter.notifyDataSetChanged()
+                viewModel.isFavList.value = !viewModel.isFavList.value!!
+
+                Constants.toastAction(this, "Favorite is in progress")
             }
         }
     }

@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.gms.nasapi.R
 import com.gms.nasapi.databinding.ItemLayoutBinding
 import com.gms.nasapi.utils.Constants
 import com.gms.nasapi.utils.NasaApiResponse
@@ -16,7 +17,7 @@ import com.google.gson.Gson
 import java.util.*
 
 class GmsAPODAdapter(private val mListener: OnItemClickListener) :
-    ListAdapter<NasaApiResponse, GmsAPODAdapter.GmssViewHolder>(ReportsDiffCallback()) {
+    ListAdapter<NasaApiResponse, GmsAPODAdapter.GmssViewHolder>(NasasDiffCallback()) {
     lateinit var context: Context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GmssViewHolder {
@@ -32,7 +33,6 @@ class GmsAPODAdapter(private val mListener: OnItemClickListener) :
 
     class GmssViewHolder private constructor(private val itemBinding: ItemLayoutBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
-
         var boolean = true
 
         @SuppressLint("UseCompatLoadingForDrawables")
@@ -42,7 +42,7 @@ class GmsAPODAdapter(private val mListener: OnItemClickListener) :
             itemBinding.copyright.text = item.copyright
             itemBinding.explanation.text = item.explanation
             itemBinding.date.text = item.date
-            Constants.setGilde(itemView.context,item.url,itemBinding.urlImg)
+            Constants.setGilde(itemView.context, item.url, itemBinding.urlImg)
 
             itemBinding.explanation.setOnClickListener {
                 if (boolean) {
@@ -54,12 +54,28 @@ class GmsAPODAdapter(private val mListener: OnItemClickListener) :
 
             }
 
+            if (isFavList) {
+                setFavText(isFavList)
+            } else {
+                setFavText(arrDate.contains(item.date))
+            }
+
             itemBinding.addToFavorite.setOnClickListener {
-               listener.onItemClick(item, adapterPosition)
+                listener.onItemClick(item, adapterPosition)
             }
             itemView.setOnLongClickListener {
-               // listener.onItemLongClick(item, adapterPosition)
+                    listener.onItemLongClick(item, adapterPosition)
                 true
+            }
+        }
+
+        private fun setFavText(value: Boolean) {
+            if (value) {
+                itemBinding.startFavo.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_star_favo))
+                itemBinding.addToFavorite.text = "Remove Favorite"
+            } else {
+                itemBinding.startFavo.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_star))
+                itemBinding.addToFavorite.text = "Add to Favorite"
             }
         }
 
@@ -75,7 +91,7 @@ class GmsAPODAdapter(private val mListener: OnItemClickListener) :
                 return GmssViewHolder(binding)
             }
 
-            fun nameImageModelObj(nameImageModel:String): List<NasaApiResponse> {
+            fun nameImageModelObj(nameImageModel: String): List<NasaApiResponse> {
                 val gson = Gson()
                 val data: Array<NasaApiResponse> = gson.fromJson(
                     nameImageModel,
@@ -84,12 +100,18 @@ class GmsAPODAdapter(private val mListener: OnItemClickListener) :
                 return data.toList()
             }
 
+            val arrDate: ArrayList<String> = ArrayList()
+
+            var isFavList: Boolean = false
+                set(value) {
+                    field = value
+                }
         }
     }
 
     // override fun getItemCount(): Int = data.size
 
-    class ReportsDiffCallback : DiffUtil.ItemCallback<NasaApiResponse>() {
+    class NasasDiffCallback : DiffUtil.ItemCallback<NasaApiResponse>() {
         override fun areItemsTheSame(
             oldItem: NasaApiResponse,
             newItem: NasaApiResponse
