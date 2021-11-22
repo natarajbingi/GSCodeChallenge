@@ -23,4 +23,21 @@ Development
 3. Navigate to GSCodeChallenge's root directory.
 4. Select `setting.gradle`
 
- 
+
+Functionality:
+-----------
+ Calendar à select the date to fetch the image of the day
+
+Options:
+-----------
+-          Day: will only display image of selected date
+-          From day: will display image of selected date till current date (optional feature – yet to finalize limits)
+
+Image can be selected as fav by clicking on star symbol. When we click on fav list, it will list all stared images
+
+-          When offline, all the downloaded image will be shown from cache
+-          When online, images are fetched from api
+-          Cache limit is 5MB
+-          App works on any resolution screen
+
+
